@@ -48,7 +48,7 @@ remoteSparkProperties = os.path.join(projectFolder, sparkProperties)
 
 lzoJar = { 
     "2.3.2.0-2950": "",
-    "2.4.0.0-169": "/usr/hdp/2.4.0.0-169/hadoop/lib/hadoop-lzo-0.6.0.2.4.0.0-169.jar"
+    "2.6.5": "/usr/hdp/2.4.0.0-169/hadoop/lib/hadoop-lzo-0.6.0.2.4.0.0-169.jar"
 }
 
 username = ""
@@ -269,7 +269,7 @@ sparkJob = {
                    "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/*<CPS>" + \
                    "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/lib/*<CPS>" + \
                    "{{PWD}}/mr-framework/hadoop/share/hadoop/tools/lib/*<CPS>" + \
-                   "%s<CPS>" % lzoJar[hdpVersion] + \
+                   #"%s<CPS>" % lzoJar[hdpVersion] + \
                    "/etc/hadoop/conf/secure<CPS>"
         },
         {"key":
