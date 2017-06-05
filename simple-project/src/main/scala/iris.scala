@@ -17,7 +17,7 @@ object IrisApp {
 		val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 		import sqlContext.implicits._
 
-		val iris = sc.textFile(hdfsPrefix + "/tmp/iris.data")
+		val iris = sc.textFile(hdfsPrefix + "/tmp/simple-project/iris.data")
 					 .filter(row => row.size>0)
 		             .map(_.split(","))
 		             .map(row => Iris(row(0).trim.toDouble, row(1).trim.toDouble, row(2).trim.toDouble, row(3).trim.toDouble, row(4)))
@@ -26,6 +26,6 @@ object IrisApp {
 		val means = iris.groupBy("species").mean("sepalLength", "sepalWidth", "petalLength", "petalWidth")
 
  		means.repartition(1)
- 		     .write.format("json").mode(SaveMode.Overwrite).save(hdfsPrefix + "/tmp/iris/means")
+ 		     .write.format("json").mode(SaveMode.Overwrite).save(hdfsPrefix + "/tmp/simple-project/iris/means")
 	}
 }
