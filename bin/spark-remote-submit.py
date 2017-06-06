@@ -225,7 +225,7 @@ sparkJob = {
     {
       "command": "{{JAVA_HOME}}/bin/java -server -Xmx1024m " + \
                  "-Dhdp.version=%s " % hdpVersion + \
-                 # "-Dspark.yarn.app.container.log.dir=/hadoop/yarn/log/rest-api" + \
+                 "-Dspark.yarn.app.container.log.dir=/yarn/logs/" + \
                  "-Dspark.app.name=%s " % appName + \
                  kerberosFlags + \
                  "org.apache.spark.deploy.yarn.ApplicationMaster " + \
