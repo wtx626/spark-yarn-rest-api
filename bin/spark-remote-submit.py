@@ -311,4 +311,4 @@ response = submitSparkJob(sparkJobJson)
 trackingUrl = response.headers["Location"].replace("apps//", "apps/")
 print "\n==> Job tracking URL:", os.path.join(hadoopResourceManager, trackingUrl.split("/ws/v1/")[1])
 
-print sparkJob
+print sparkJobJson
