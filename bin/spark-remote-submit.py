@@ -297,7 +297,7 @@ sparkJob = {
     "memory": applicationMasterMemory,
     "vCores": applicationMasterCores
   },
-  "application-type": "YARN",
+  "application-type": "SPARK",
   "keep-containers-across-application-attempts": False
 }
 
