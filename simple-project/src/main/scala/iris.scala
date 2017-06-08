@@ -12,7 +12,7 @@ object IrisApp {
 
  	def main(args: Array[String]) {
 
-		val conf = new SparkConf().setAppName("Iris Application")
+//		val conf = new SparkConf().setAppName("Iris Application")
 		val sc = new SparkContext()
 		val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 		import sqlContext.implicits._

@@ -274,7 +274,7 @@ sparkJob = {
         },
         {"key":
           "SPARK_YARN_CACHE_FILES",
-          "value": "%s#__app__.jar,%s#__spark__.jar" % (createHdfsPath(remoteAppJar), createHdfsPath(remoteSparkJar))
+          "value": "%s#__app__.jar,%s#__spark__.jar%s#__app__.properties" % (createHdfsPath(remoteAppJar), createHdfsPath(remoteSparkJar),createHdfsPath(remoteSparkProperties))
         },
         {"key":
           "SPARK_YARN_CACHE_FILES_FILE_SIZES",
