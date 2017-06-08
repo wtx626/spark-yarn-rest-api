@@ -140,7 +140,7 @@ def start_program(projectFolder, remoteSparkJar, remoteAppJar, remoteSparkProper
                             [
                                 {
                                     "key": "JAVA_HOME",
-                                    "value": "/usr/java/jdk1.8.0_112/"
+                                    "value": "/usr/java/jdk1.7.0_45/"
                                 },
                                 {
                                     "key": "SPARK_YARN_MODE",
