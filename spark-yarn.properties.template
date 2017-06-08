@@ -1,19 +1,19 @@
-spark.yarn.submit.file.replication=1
+spark.yarn.submit.file.replication 1
 
-spark.yarn.executor.memoryOverhead=384
-spark.yarn.driver.memoryOverhead=384
+spark.yarn.executor.memoryOverhead 384
+spark.yarn.driver.memoryOverhead 384
 
-spark.master=yarn
-spark.submit.deployMode=cluster
-spark.eventLog.enabled=true
+spark.master yarn
+spark.submit.deployMode cluster
+spark.eventLog.enabled true
 
-spark.yarn.containerLauncherMaxThreads=25
-spark.yarn.max.executor.failures=3
-spark.executor.instances=8
+spark.yarn.containerLauncherMaxThreads 25
+spark.yarn.max.executor.failures 3
+spark.executor.instances 8
 
-spark.eventLog.dir=hdfs://10.0.3.1:9000/home/logs
+spark.eventLog.dir hdfs://10.0.3.1:9000/home/logs
 
-spark.history.kerberos.enabled=false
-spark.history.ui.port=18080
+spark.history.kerberos.enabled false
+spark.history.ui.port 18080
 
-spark.history.fs.logDirectory=hdfs://10.0.3.1:9000/home/logs
+spark.history.fs.logDirectory hdfs://10.0.3.1:9000/home/logs
