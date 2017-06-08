@@ -46,13 +46,14 @@ debug = config.getboolean("Project", "debug")
 remoteAppJar = os.path.join(projectFolder, "simple-project.jar")
 remoteSparkProperties = os.path.join(projectFolder, sparkProperties)
 
-lzoJar = { 
+lzoJar = {
     "2.3.2.0-2950": "",
     "2.6.5": "/usr/hdp/2.4.0.0-169/hadoop/lib/hadoop-lzo-0.6.0.2.4.0.0-169.jar"
 }
 
 username = ""
 password = ""
+
 
 # # # # # # # # # # # #
 #
@@ -63,25 +64,32 @@ password = ""
 def createHdfsPath(path):
     return os.path.join("hdfs://", hadoopNameNode, path.strip("/"))
 
+
 def webhdfsGetRequest(path, op, allow_redirects=False):
     url = os.path.join(hadoopWebhdfsHost, path.strip("/"))
-    response = requests.get("%s?op=%s" % (url, op), allow_redirects=allow_redirects, verify=validateKnoxSSL, auth=(username, password))
+    response = requests.get("%s?op=%s" % (url, op), allow_redirects=allow_redirects, verify=validateKnoxSSL,
+                            auth=(username, password))
     print ">>> Status: %d (%s)" % (response.status_code, url)
     return response.json()
 
+
 def webhdfsPutRequest(path, op, allow_redirects=False):
     url = os.path.join(hadoopWebhdfsHost, path.strip("/"))
-    response = requests.put("%s?op=%s" % (url, op), "", allow_redirects=allow_redirects, verify=validateKnoxSSL, auth=(username, password))
+    response = requests.put("%s?op=%s" % (url, op), "", allow_redirects=allow_redirects, verify=validateKnoxSSL,
+                            auth=(username, password))
     print ">>> Status: %d (%s)" % (response.status_code, url)
     return response
+
 
 def pathExists(path):
     response = webhdfsGetRequest(path, "GETFILESTATUS")
     return (response.has_key("FileStatus"), response)
 
+
 def createDir(path):
     response = webhdfsPutRequest(path, "MKDIRS").json()
     return (response.has_key("boolean") and response["boolean"], response)
+
 
 def uploadFile(localFile, remoteFile):
     response = webhdfsPutRequest(remoteFile, "CREATE&overwrite=true")
@@ -91,7 +99,8 @@ def uploadFile(localFile, remoteFile):
             response = requests.put(location, fd, verify=validateKnoxSSL, auth=(username, password))
             print ">>> Status: %d (%s)" % (response.status_code, "<redirect>")
             return (True, response.text)
-    return(False, "")
+    return (False, "")
+
 
 def createCacheValue(path, size, timestamp):
     return {
@@ -102,6 +111,7 @@ def createCacheValue(path, size, timestamp):
         "timestamp": timestamp
     }
 
+
 def createNewApplication():
     url = os.path.join(hadoopResourceManager, "cluster/apps/new-application")
     response = requests.post(url, "", verify=validateKnoxSSL, auth=(username, password))
@@ -111,7 +121,8 @@ def createNewApplication():
 
 def submitSparkJob(sparkJson):
     url = os.path.join(hadoopResourceManager, "cluster/apps")
-    response = requests.post(url, sparkJson, headers={"Content-Type": "application/json"}, verify=validateKnoxSSL, auth=(username, password))
+    response = requests.post(url, sparkJson, headers={"Content-Type": "application/json"}, verify=validateKnoxSSL,
+                             auth=(username, password))
     print ">>> Status: %d (%s)" % (response.status_code, url)
     return response
 
@@ -123,32 +134,27 @@ def submitSparkJob(sparkJson):
 # # # # # # # # # # # #
 
 if not validateKnoxSSL:
-  print "\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-  print "Warning: UNSECURE network access for ALL following calls!"
-  print "- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
-  requests.packages.urllib3.disable_warnings()
-
+    print "\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+    print "Warning: UNSECURE network access for ALL following calls!"
+    print "- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n"
+    requests.packages.urllib3.disable_warnings()
 
 print "Getting credentials from environment variable KNOX_CREDENTIALS as username:password..."
 if os.environ.get("KNOX_CREDENTIALS"):
     username, password = os.environ["KNOX_CREDENTIALS"].split(":")
-
 
 print "Checking project folder ..."
 if not pathExists(projectFolder):
     ret = createDir(projectFolder)
     if not ret[0]: raise Exception(json.dumps(ret[1]))
 
-
 print "Uploading App Jar ..."
 ret = uploadFile(appJar, remoteAppJar)
 if not ret[0]: raise Exception(ret[1])
 
-
 print "Uploading Spark properties ..."
 with open("spark-yarn.properties.template", "r") as fd:
     properties = fd.read()
-
 
 with open(sparkProperties, "w") as fd:
     fd.write(properties)
@@ -167,11 +173,8 @@ with open(sparkProperties, "w") as fd:
         fd.write("spark.history.kerberos.keytab=none\n")
         fd.write("spark.history.kerberos.principal=none\n")
 
-
-
 ret = uploadFile(sparkProperties, remoteSparkProperties)
 if not ret[0]: raise Exception(ret[1])
-
 
 print "Creating Spark Job file ..."
 
@@ -191,114 +194,143 @@ newApp = createNewApplication()
 
 kerberosFlags = ""
 if clusterKerberized:
-  credentialsFile = createHdfsPath(os.path.join(projectFolder, "credentials_%s" % str(uuid.uuid4())))
-  kerberosFlags =  "-Dspark.yarn.keytab=%s " % hdfsAccessKeytab + \
-                   "-Dspark.yarn.principal=%s " % hdfsAccessPrincipal+ \
-                   "-Dspark.yarn.credentials.file=%s " % credentialsFile + \
-                   "-Dspark.history.kerberos.keytab=%s " % historyAccessKeytab + \
-                   "-Dspark.history.kerberos.principal=%s " % historyAccessPrincipal + \
-                   "-Dspark.history.kerberos.enabled=true "
+    credentialsFile = createHdfsPath(os.path.join(projectFolder, "credentials_%s" % str(uuid.uuid4())))
+    kerberosFlags = "-Dspark.yarn.keytab=%s " % hdfsAccessKeytab + \
+                    "-Dspark.yarn.principal=%s " % hdfsAccessPrincipal + \
+                    "-Dspark.yarn.credentials.file=%s " % credentialsFile + \
+                    "-Dspark.history.kerberos.keytab=%s " % historyAccessKeytab + \
+                    "-Dspark.history.kerberos.principal=%s " % historyAccessPrincipal + \
+                    "-Dspark.history.kerberos.enabled=true "
 
 sparkJob = {
-  "application-id": newApp[1]["application-id"],
-  "application-name": appName,
-  "am-container-spec":
-  {
-    "local-resources":
-    {
-      "entry":[
+    "application-id": newApp[1]["application-id"],
+    "application-name": appName,
+    "am-container-spec":
         {
-          "key": "__spark__.jar",
-          "value": createCacheValue(remoteSparkJar, sparkJarFileStatus["length"], sparkJarFileStatus["modificationTime"])
+            "local-resources":
+                {
+                    "entry": [
+                        {
+                            "key": "__spark__.jar",
+                            "value": createCacheValue(remoteSparkJar, sparkJarFileStatus["length"],
+                                                      sparkJarFileStatus["modificationTime"])
+                        },
+                        {
+                            "key": "__app__.jar",
+                            "value": createCacheValue(remoteAppJar, appJarFileStatus["length"],
+                                                      appJarFileStatus["modificationTime"])
+                        },
+                        {
+                            "key": "__app__.properties",
+                            "value": createCacheValue(remoteSparkProperties, sparkPropertiesFileStatus["length"],
+                                                      sparkPropertiesFileStatus["modificationTime"])
+                        }
+                    ]
+                },
+            "commands":
+                {
+                    "command": "{{JAVA_HOME}}/bin/java -server -Xmx1024m " + \
+                               "-Dhdp.version=%s " % hdpVersion + \
+                               # "-Dspark.yarn.app.container.log.dir=hdfs://10.0.0.21:9000/yarn/logs" + \
+                               "-Dspark.app.name=%s " % appName + \
+                               kerberosFlags + \
+                               "org.apache.spark.deploy.yarn.ApplicationMaster " + \
+                               "--class IrisApp --jar __app__.jar " + \
+                               "--arg '--class' --arg '%s' " % appName + \
+                               "1><LOG_DIR>/AppMaster.stdout " + \
+                               "2><LOG_DIR>/AppMaster.stderr"
+                },
+            "environment":
+                {
+                    "entry":
+                        [
+                            {
+                                "key": "JAVA_HOME",
+                                "value": javaHome
+                            },
+                            {
+                                "key": "SPARK_YARN_MODE",
+                                "value": True
+                            },
+                            {
+                                "key": "HDP_VERSION",
+                                "value": hdpVersion
+                            },
+                            {
+                                "key": "HADOOP_CONF_DIR",
+                                "value": "/home/hadoop-2.6.0_stable/etc/hadoop"
+                            },
+                            {
+                                "key": "HADOOP_COMMON_HOME",
+                                "value": "/home/hadoop-2.6.0_stable"
+                            },
+                            {
+                                "key": "HADOOP_HDFS_HOME",
+                                "value": ""
+                            },
+                            {
+                                "key": "CLASSPATH",
+                                "value": "{{PWD}}<CPS>__spark__.jar<CPS>" + \
+                                         "{{PWD}}/__app__.jar<CPS>" + \
+                                         "{{PWD}}/__app__.properties<CPS>" + \
+                                         "{{HADOOP_CONF_DIR}}<CPS>" + \
+                                         "/usr/hdp/current/hadoop-client/*<CPS>" + \
+                                         "/usr/hdp/current/hadoop-client/lib/*<CPS>" + \
+                                         "/usr/hdp/current/hadoop-hdfs-client/*<CPS>" + \
+                                         "/usr/hdp/current/hadoop-hdfs-client/lib/*<CPS>" + \
+                                         "/usr/hdp/current/hadoop-yarn-client/*<CPS>" + \
+                                         "/usr/hdp/current/hadoop-yarn-client/lib/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/common/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/common/lib/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/yarn/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/yarn/lib/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/lib/*<CPS>" + \
+                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/tools/lib/*<CPS>" + \
+                                         # "%s<CPS>" % lzoJar[hdpVersion] + \
+                                         "/etc/hadoop/conf/secure<CPS>" + \
+                                         "{{CLASSPATH}}<CPS>./*<CPS>" + \
+                                         "{{HADOOP_CONF_DIR}}<CPS>" + \
+                                         "{{HADOOP_COMMON_HOME}}/share/hadoop/common/*<CPS>" + \
+                                         "{{HADOOP_COMMON_HOME}}/share/hadoop/common/lib/*<CPS>" + \
+                                         "{{HADOOP_COMMON_HOME}}/share/hadoop/hdfs/*<CPS>" + \
+                                         "{{HADOOP_COMMON_HOME}}/share/hadoop/hdfs/lib/*<CPS>" + \
+                                         "{{HADOOP_COMMON_HOME}}/share/hadoop/yarn/*<CPS>" + \
+                                         "{{HADOOP_COMMON_HOME}}/share/hadoop/yarn/lib/*<CPS>" + \
+                                         "./log4j.properties"
+                            },
+                            {"key":
+                                 "SPARK_YARN_CACHE_FILES",
+                             "value": "%s#__app__.jar,%s#__spark__.jar,%s#__app__.properties" % (
+                                 createHdfsPath(remoteAppJar), createHdfsPath(remoteSparkJar),
+                                 createHdfsPath(remoteSparkProperties))
+                             },
+                            {"key":
+                                 "SPARK_YARN_CACHE_FILES_FILE_SIZES",
+                             "value": "%d,%d,%d" % (appJarFileStatus["length"], sparkJarFileStatus["length"],
+                                                    sparkPropertiesFileStatus["length"])
+                             },
+                            {"key":
+                                 "SPARK_YARN_CACHE_FILES_TIME_STAMPS",
+                             "value": "%d,%d,%d" % (
+                                 appJarFileStatus["modificationTime"], sparkJarFileStatus["modificationTime"],
+                                 sparkPropertiesFileStatus["modificationTime"])
+                             },
+                            {"key":
+                                 "SPARK_YARN_CACHE_FILES_VISIBILITIES",
+                             "value": "PUBLIC,PRIVATE,PRIVATE"
+                             },
+                        ]
+                }
         },
-        {
-          "key": "__app__.jar",
-          "value": createCacheValue(remoteAppJar, appJarFileStatus["length"], appJarFileStatus["modificationTime"])
-        },
-        {
-          "key": "__app__.properties",
-          "value": createCacheValue(remoteSparkProperties, sparkPropertiesFileStatus["length"], sparkPropertiesFileStatus["modificationTime"])
-        }
-      ]
+    "unmanaged-AM": False,
+    "max-app-attempts": 2,
+    "resource": {
+        "memory": applicationMasterMemory,
+        "vCores": applicationMasterCores
     },
-    "commands":
-    {
-      "command": "{{JAVA_HOME}}/bin/java -server -Xmx1024m " + \
-                 "-Dhdp.version=%s " % hdpVersion + \
-                 # "-Dspark.yarn.app.container.log.dir=hdfs://10.0.0.21:9000/yarn/logs" + \
-                 "-Dspark.app.name=%s " % appName + \
-                 kerberosFlags + \
-                 "org.apache.spark.deploy.yarn.ApplicationMaster " + \
-                 "--class IrisApp --jar __app__.jar " + \
-                 "--arg '--class' --arg '%s' " % appName + \
-                 "1><LOG_DIR>/AppMaster.stdout " + \
-                 "2><LOG_DIR>/AppMaster.stderr"
-    },
-    "environment":
-    {
-      "entry":
-      [
-        {
-          "key": "JAVA_HOME",
-          "value": javaHome
-        },
-        {
-          "key": "SPARK_YARN_MODE",
-          "value": True
-        },
-        {
-          "key": "HDP_VERSION",
-          "value": hdpVersion
-        },
-        {
-          "key": "CLASSPATH",
-          "value": "{{PWD}}<CPS>__spark__.jar<CPS>" + \
-                   "{{PWD}}/__app__.jar<CPS>" + \
-                   "{{PWD}}/__app__.properties<CPS>" + \
-                   "{{HADOOP_CONF_DIR}}<CPS>" + \
-                   "/usr/hdp/current/hadoop-client/*<CPS>" + \
-                   "/usr/hdp/current/hadoop-client/lib/*<CPS>" + \
-                   "/usr/hdp/current/hadoop-hdfs-client/*<CPS>" + \
-                   "/usr/hdp/current/hadoop-hdfs-client/lib/*<CPS>" + \
-                   "/usr/hdp/current/hadoop-yarn-client/*<CPS>" + \
-                   "/usr/hdp/current/hadoop-yarn-client/lib/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/common/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/common/lib/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/yarn/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/yarn/lib/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/lib/*<CPS>" + \
-                   "{{PWD}}/mr-framework/hadoop/share/hadoop/tools/lib/*<CPS>" + \
-                   #"%s<CPS>" % lzoJar[hdpVersion] + \
-                   "/etc/hadoop/conf/secure<CPS>"
-        },
-        {"key":
-          "SPARK_YARN_CACHE_FILES",
-          "value": "%s#__app__.jar,%s#__spark__.jar,%s#__app__.properties" % (createHdfsPath(remoteAppJar), createHdfsPath(remoteSparkJar),createHdfsPath(remoteSparkProperties))
-        },
-        {"key":
-          "SPARK_YARN_CACHE_FILES_FILE_SIZES",
-          "value": "%d,%d,%d" % (appJarFileStatus["length"], sparkJarFileStatus["length"],sparkPropertiesFileStatus["length"])
-        },
-        {"key":
-          "SPARK_YARN_CACHE_FILES_TIME_STAMPS",
-          "value": "%d,%d,%d" % (appJarFileStatus["modificationTime"], sparkJarFileStatus["modificationTime"],sparkPropertiesFileStatus["modificationTime"])
-        },
-        {"key":
-          "SPARK_YARN_CACHE_FILES_VISIBILITIES",
-          "value": "PUBLIC,PRIVATE,PRIVATE"
-        },
-      ]
-    }
-  },
-  "unmanaged-AM": False,
-  "max-app-attempts": 2,
-  "resource": {  
-    "memory": applicationMasterMemory,
-    "vCores": applicationMasterCores
-  },
-  "application-type": "SPARK",
-  "keep-containers-across-application-attempts": False
+    "application-type": "SPARK",
+    "keep-containers-across-application-attempts": False
 }
 
 print "Submitting Spark Job ..."

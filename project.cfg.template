@@ -33,7 +33,7 @@ sparkProperties = spark-yarn.properties
 
 applicationMasterMemory = 1024
 applicationMasterCores = 1
-executorMemory = 2G
-executorCores = 2
+executorMemory = 1G
+executorCores = 1
 
 debug=False
