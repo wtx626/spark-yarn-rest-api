@@ -257,16 +257,16 @@ sparkJob = {
                                 "value": hdpVersion
                             },
                             {
+                                "key":"SPARK_CONF_DIR",
+                                "value":"/home/spark-1.6.0_stable/conf/"
+                            },
+                            {
                                 "key": "HADOOP_CONF_DIR",
                                 "value": "/home/hadoop-2.6.0_stable/etc/hadoop"
                             },
                             {
                                 "key": "HADOOP_COMMON_HOME",
                                 "value": "/home/hadoop-2.6.0_stable"
-                            },
-                            {
-                                "key": "HADOOP_HDFS_HOME",
-                                "value": ""
                             },
                             {
                                 "key": "CLASSPATH",
