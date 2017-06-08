@@ -274,19 +274,19 @@ sparkJob = {
         },
         {"key":
           "SPARK_YARN_CACHE_FILES",
-          "value": "%s#__app__.jar,%s#__spark__.jar%s#__app__.properties" % (createHdfsPath(remoteAppJar), createHdfsPath(remoteSparkJar),createHdfsPath(remoteSparkProperties))
+          "value": "%s#__app__.jar,%s#__spark__.jar,%s#__app__.properties" % (createHdfsPath(remoteAppJar), createHdfsPath(remoteSparkJar),createHdfsPath(remoteSparkProperties))
         },
         {"key":
           "SPARK_YARN_CACHE_FILES_FILE_SIZES",
-          "value": "%d,%d" % (appJarFileStatus["length"], sparkJarFileStatus["length"])
+          "value": "%d,%d,%d" % (appJarFileStatus["length"], sparkJarFileStatus["length"],sparkPropertiesFileStatus["length"])
         },
         {"key":
           "SPARK_YARN_CACHE_FILES_TIME_STAMPS",
-          "value": "%d,%d" % (appJarFileStatus["modificationTime"], sparkJarFileStatus["modificationTime"])
+          "value": "%d,%d,%d" % (appJarFileStatus["modificationTime"], sparkJarFileStatus["modificationTime"],sparkPropertiesFileStatus["modificationTime"])
         },
         {"key":
           "SPARK_YARN_CACHE_FILES_VISIBILITIES",
-          "value": "PUBLIC,PRIVATE"
+          "value": "PUBLIC,PRIVATE,PRIVATE"
         },
       ]
     }
