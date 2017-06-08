@@ -235,7 +235,7 @@ sparkJob = {
                                "-Dspark.app.name=%s " % appName + \
                                kerberosFlags + \
                                "org.apache.spark.deploy.yarn.ApplicationMaster " + \
-                               "--class IrisApp --jar __app__.jar " + \
+                               "--class IrisApp --jar __app__.jar --properties-file _app__.properties" + \
                                "--arg '--class' --arg '%s' " % appName + \
                                "1><LOG_DIR>/AppMaster.stdout " + \
                                "2><LOG_DIR>/AppMaster.stderr"
