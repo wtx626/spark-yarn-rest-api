@@ -210,7 +210,7 @@ def start_program(projectFolder, remoteSparkJar, remoteAppJar, remoteSparkProper
 
 
 start_program("/zhuyi/submit_files",
-              "/zhuyi/submit_filesspark-assembly-1.6.1-hadoop2.6.0.jar",
+              "/zhuyi/submit_files/spark-assembly-1.6.1-hadoop2.6.0.jar",
               "/zhuyi/submit_files/SelectDomain.jar",
               "/zhuyi/submit_files/spark-yarn.properties",
               "submit_files")
