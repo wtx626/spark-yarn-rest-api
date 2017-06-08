@@ -273,22 +273,6 @@ sparkJob = {
                                 "value": "{{PWD}}<CPS>__spark__.jar<CPS>" + \
                                          "{{PWD}}/__app__.jar<CPS>" + \
                                          "{{PWD}}/__app__.properties<CPS>" + \
-                                         "{{HADOOP_CONF_DIR}}<CPS>" + \
-                                         "/usr/hdp/current/hadoop-client/*<CPS>" + \
-                                         "/usr/hdp/current/hadoop-client/lib/*<CPS>" + \
-                                         "/usr/hdp/current/hadoop-hdfs-client/*<CPS>" + \
-                                         "/usr/hdp/current/hadoop-hdfs-client/lib/*<CPS>" + \
-                                         "/usr/hdp/current/hadoop-yarn-client/*<CPS>" + \
-                                         "/usr/hdp/current/hadoop-yarn-client/lib/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/common/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/common/lib/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/yarn/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/yarn/lib/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/hdfs/lib/*<CPS>" + \
-                                         "{{PWD}}/mr-framework/hadoop/share/hadoop/tools/lib/*<CPS>" + \
-                                         # "%s<CPS>" % lzoJar[hdpVersion] + \
-                                         "/etc/hadoop/conf/secure<CPS>" + \
                                          "{{CLASSPATH}}<CPS>./*<CPS>" + \
                                          "{{HADOOP_CONF_DIR}}<CPS>" + \
                                          "{{HADOOP_COMMON_HOME}}/share/hadoop/common/*<CPS>" + \
